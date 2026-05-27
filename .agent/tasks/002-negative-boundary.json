@@ -10,7 +10,6 @@
     "Dockerfile",
     "opencode.jsonc",
     "AGENTS.md",
-    ".github/workflows/**",
     "**/.env",
     "**/.env.*",
     "**/*secret*",
