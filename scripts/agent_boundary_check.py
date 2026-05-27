@@ -16,12 +16,45 @@ def matches(path: str, patterns: list[str]) -> bool:
     return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
 
 
+def get_working_tree_changed_files() -> list[str]:
+    files: set[str] = set()
+
+    staged = run(["git", "diff", "--cached", "--name-only"])
+    for line in staged.splitlines():
+        if line.strip():
+            files.add(line.strip())
+
+    unstaged = run(["git", "diff", "--name-only"])
+    for line in unstaged.splitlines():
+        if line.strip():
+            files.add(line.strip())
+
+    untracked = run(["git", "ls-files", "--others", "--exclude-standard"])
+    for line in untracked.splitlines():
+        if line.strip():
+            files.add(line.strip())
+
+    return sorted(files)
+
+
 def main() -> int:
-    if len(sys.argv) != 2:
-        print("Usage: agent_boundary_check.py <task.json>", file=sys.stderr)
+    include_working_tree = False
+    task_arg = None
+
+    for arg in sys.argv[1:]:
+        if arg == "--include-working-tree":
+            include_working_tree = True
+        elif task_arg is None:
+            task_arg = arg
+        else:
+            print("Usage: agent_boundary_check.py [--include-working-tree] <task.json>", file=sys.stderr)
+            return 2
+
+    if task_arg is None:
+        print("Usage: agent_boundary_check.py [--include-working-tree] <task.json>", file=sys.stderr)
         return 2
 
-    task_path = Path(sys.argv[1])
+    task_path = Path(task_arg)
     task = json.loads(task_path.read_text(encoding="utf-8"))
 
     base_ref = os.getenv("BASE_REF", "origin/main")
@@ -34,7 +67,19 @@ def main() -> int:
         print(exc, file=sys.stderr)
         return 2
 
-    changed_files = [line for line in changed_raw.splitlines() if line.strip()]
+    changed_files: list[str] = [line for line in changed_raw.splitlines() if line.strip()]
+
+    if include_working_tree:
+        try:
+            working_tree_files = get_working_tree_changed_files()
+        except subprocess.CalledProcessError as exc:
+            print("Failed to read working tree changes", file=sys.stderr)
+            print(exc, file=sys.stderr)
+            return 2
+
+        combined: set[str] = set(changed_files)
+        combined.update(working_tree_files)
+        changed_files = sorted(combined)
 
     allowed = task.get("allowed_files", [])
     forbidden = task.get("forbidden_files", [])
