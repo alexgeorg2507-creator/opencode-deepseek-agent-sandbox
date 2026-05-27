@@ -18,16 +18,45 @@
     "glob": "allow",
     "grep": "allow",
     "list": "allow",
-    "edit": "ask",
+    "edit": "allow",
     "external_directory": "deny",
     "webfetch": "deny",
     "websearch": "deny",
     "bash": {
       "*": "ask",
+
+      "pwd": "allow",
+      "ls *": "allow",
+      "find *": "allow",
+      "cat *": "allow",
+      "grep *": "allow",
+      "sed *": "allow",
+      "mkdir *": "allow",
+      "touch *": "allow",
+      "chmod *": "allow",
+
       "git status*": "allow",
       "git diff*": "allow",
       "git ls-files*": "allow",
-      "python3*": "ask"
+      "git log*": "allow",
+      "git branch*": "allow",
+      "git show*": "allow",
+
+      "python3 scripts/agent_boundary_check.py*": "allow",
+      "python3 tests/*": "allow",
+      "python3 -m pytest*": "allow",
+      "bash -n *": "allow",
+      "test -x *": "allow",
+
+      "git commit*": "deny",
+      "git push*": "deny",
+      "gh *": "deny",
+      "docker *": "deny",
+      "sudo *": "deny",
+      "aws *": "deny",
+      "curl *": "deny",
+      "wget *": "deny",
+      "rm -rf *": "deny"
     }
   }
 }
