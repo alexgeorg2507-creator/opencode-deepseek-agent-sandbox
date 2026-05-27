@@ -1,0 +1,20 @@
+# secrets
+.env
+.env.*
+*.pem
+*.key
+*secret*
+*credential*
+auth.json
+
+# local/runtime
+.opencode/
+.cache/
+tmp/
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
