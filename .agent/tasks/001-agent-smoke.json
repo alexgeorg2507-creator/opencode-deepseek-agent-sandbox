@@ -1,0 +1,42 @@
+{
+  "id": "001-agent-smoke",
+  "goal": "Add a small repository note that documents the six coding-agent evaluation criteria. Do not modify application, infrastructure, CI, secrets, lockfiles, package metadata, or Docker runtime files.",
+  "allowed_files": [
+    "docs/agent-evaluation.md",
+    ".agent/evidence/001-agent-smoke.md"
+  ],
+  "forbidden_files": [
+    ".github/**",
+    ".devcontainer/**",
+    "Dockerfile",
+    "opencode.jsonc",
+    "AGENTS.md",
+    "terraform/**",
+    "infra/**",
+    "iac/**",
+    "app/**",
+    "src/**",
+    "**/.env",
+    "**/.env.*",
+    "**/*secret*",
+    "**/*credential*",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "requirements.txt",
+    "pyproject.toml",
+    "poetry.lock",
+    "docker-compose.yml"
+  ],
+  "acceptance_criteria": [
+    "docs/agent-evaluation.md exists",
+    "The document lists the six agent evaluation criteria",
+    "No forbidden files are modified",
+    ".agent/evidence/001-agent-smoke.md exists",
+    "Evidence includes changed files, diff stat, validation command, and validation result"
+  ],
+  "validation_commands": [
+    "python3 scripts/agent_boundary_check.py .agent/tasks/001-agent-smoke.json"
+  ]
+}
