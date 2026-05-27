@@ -1,0 +1,37 @@
+{
+  "id": "003-working-tree-boundary",
+  "goal": "Introduce --include-working-tree mode that checks committed, staged, unstaged, and untracked files against the boundary.",
+  "allowed_files": [
+    ".agent/tasks/003-working-tree-boundary.json",
+    "scripts/agent_boundary_check.py",
+    "tests/agent_boundary/test_working_tree_boundary.py"
+  ],
+  "forbidden_files": [
+    "Dockerfile",
+    "opencode.jsonc",
+    "AGENTS.md",
+    ".github/**",
+    "docs/**",
+    "app/**",
+    "src/**",
+    "terraform/**",
+    "infra/**",
+    "iac/**",
+    "**/.env",
+    "**/.env.*",
+    "**/*secret*",
+    "**/*credential*"
+  ],
+  "acceptance_criteria": [
+    "scripts/agent_boundary_check.py accepts --include-working-tree flag",
+    "Default mode (without flag) behaves as before, checking only committed diff range BASE_REF...HEAD",
+    "--include-working-tree mode also checks staged, unstaged modified, and untracked files",
+    "tests/agent_boundary/test_working_tree_boundary.py exists and passes",
+    "Boundary check returns 0 on pass, 1 on violations, 2 on usage/git errors"
+  ],
+  "validation_commands": [
+    "python3 scripts/agent_boundary_check.py --include-working-tree .agent/tasks/003-working-tree-boundary.json",
+    "python3 tests/agent_boundary/test_forbidden_boundary.py",
+    "python3 tests/agent_boundary/test_working_tree_boundary.py"
+  ]
+}
