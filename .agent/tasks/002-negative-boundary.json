@@ -1,0 +1,30 @@
+{
+  "id": "002-negative-boundary",
+  "goal": "Demonstrate that forbidden-file changes cause the boundary check to fail. This PR creates the negative test task file, updates the workflow to detect tasks dynamically, and adds a regression test for forbidden boundary violations.",
+  "allowed_files": [
+    ".agent/tasks/002-negative-boundary.json",
+    ".github/workflows/agent-boundary.yml",
+    "tests/agent_boundary/test_forbidden_boundary.py"
+  ],
+  "forbidden_files": [
+    "Dockerfile",
+    "opencode.jsonc",
+    "AGENTS.md",
+    ".github/workflows/**",
+    "**/.env",
+    "**/.env.*",
+    "**/*secret*",
+    "**/*credential*"
+  ],
+  "acceptance_criteria": [
+    ".agent/tasks/002-negative-boundary.json exists and lists exactly the three files changed in this PR as allowed",
+    ".github/workflows/agent-boundary.yml detects changed task files dynamically instead of hardcoding 001-agent-smoke.json",
+    "tests/agent_boundary/test_forbidden_boundary.py exists and passes",
+    ".agent/tasks/002-negative-boundary.json validation passes against the PR changes",
+    "A forbidden change to Dockerfile causes the boundary check to exit non-zero with a FORBIDDEN_CHANGED error"
+  ],
+  "validation_commands": [
+    "python3 scripts/agent_boundary_check.py .agent/tasks/002-negative-boundary.json",
+    "python3 tests/agent_boundary/test_forbidden_boundary.py"
+  ]
+}
