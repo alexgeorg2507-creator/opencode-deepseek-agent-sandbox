@@ -1,0 +1,48 @@
+{
+  "id": "004-runner-harness",
+  "goal": "Add a local runner harness for task-scoped OpenCode agent PRs and reduce approval noise with a safer OpenCode permission profile.",
+  "allowed_files": [
+    ".agent/tasks/004-runner-harness.json",
+    "scripts/run_agent_pr.sh",
+    "docs/agent-runner.md",
+    "opencode.jsonc"
+  ],
+  "forbidden_files": [
+    "Dockerfile",
+    "AGENTS.md",
+    ".github/**",
+    "app/**",
+    "src/**",
+    "terraform/**",
+    "infra/**",
+    "iac/**",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "requirements.txt",
+    "pyproject.toml",
+    "poetry.lock",
+    "**/.env",
+    "**/.env.*",
+    "**/*secret*",
+    "**/*credential*"
+  ],
+  "acceptance_criteria": [
+    "scripts/run_agent_pr.sh exists and is executable",
+    "runner validates required tools",
+    "runner validates DEEPSEEK_API_KEY",
+    "runner starts the Docker-based OpenCode agent container",
+    "runner runs boundary check with --include-working-tree after agent exit",
+    "runner runs validation_commands from the task JSON when present",
+    "runner asks for explicit COMMIT confirmation before committing",
+    "runner pushes the branch and creates a PR through gh",
+    "opencode.jsonc reduces approval prompts for safe local read/edit/validation commands",
+    "opencode.jsonc denies git commit, git push, gh, docker, sudo, aws, web access, and external directory access"
+  ],
+  "validation_commands": [
+    "bash -n scripts/run_agent_pr.sh",
+    "test -x scripts/run_agent_pr.sh",
+    "python3 scripts/agent_boundary_check.py --include-working-tree .agent/tasks/004-runner-harness.json"
+  ]
+}
