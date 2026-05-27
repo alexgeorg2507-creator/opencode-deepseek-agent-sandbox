@@ -18,8 +18,30 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Detect changed task file
+        id: task
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: |
+          CHANGED_TASKS=$(git diff --name-only "$BASE_REF...HEAD" -- '.agent/tasks/*.json')
+          COUNT=$(echo "$CHANGED_TASKS" | grep -c . || true)
+          if [ "$COUNT" -ne 1 ]; then
+            echo "ERROR: Expected exactly 1 changed task file, found $COUNT"
+            echo "Changed task files:"
+            echo "$CHANGED_TASKS"
+            exit 1
+          fi
+          echo "TASK_FILE=$CHANGED_TASKS" >> "$GITHUB_ENV"
+
       - name: Run boundary check
         env:
           BASE_REF: origin/${{ github.base_ref }}
         run: |
-          python3 scripts/agent_boundary_check.py .agent/tasks/001-agent-smoke.json
+          python3 scripts/agent_boundary_check.py "$TASK_FILE"
+
+      - name: Run forbidden boundary regression test
+        if: always()
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: |
+          python3 tests/agent_boundary/test_forbidden_boundary.py
